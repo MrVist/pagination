@@ -9,7 +9,7 @@
         pluginName = 'pagination',
         defaults = {
             'firstText': '首页',
-            'lastText': '尾页',
+            'lastText': '末页',
             'preText': '上一页',
             'nextText': '下一页',
             'total': '1',
@@ -22,7 +22,7 @@
         this.isLast = false;
         this.$element = $(element);
         this.options = options ? $.extend({}, defaults, options) : defaults;
-        this.goto = typeof callback === 'function' ? callback : function () {
+        this.callback = typeof callback === 'function' ? callback : function () {
             return false;
         };
     }
@@ -34,7 +34,7 @@
                 page = '';
 
             _this.options = options ? $.extend({}, _this.options, options) : _this.options;
-            _this.goto = typeof callback === 'function' ? callback : _this.goto;
+            _this.callback = typeof callback === 'function' ? callback : _this.callback;
             //判断是否首页尾页
             _this.isFirst = parseInt(_this.options.current) === 1;
             _this.isLast = parseInt(_this.options.total) === parseInt(_this.options.current);
@@ -50,11 +50,11 @@
                 '<span data-page=\"' + (parseInt(_this.options.current) + 1) + '\" ' + (_this.isLast ? 'disabled=\"disabled\"' : '') + '>' + _this.options.nextText + '</span>' +
                 '<span data-page=\"' + parseInt(_this.options.total) + '\" ' + (_this.isLast ? 'disabled=\"disabled\"' : '') + '>' + _this.options.lastText + '</span>';
             _this.$element.html(html);
-            _this.$element.unbind('click');
-            _this.$element.on('click', function (e) {
+            _this.$element.unbind('click.pagination');
+            _this.$element.on('click.pagination',function (e) {
                 e = e || window.event;
-                if (!e.target.getAttribute('disabled') && e.target.getAttribute('data-page')) {
-                    _this.goto(e.target.getAttribute('data-page'));
+                if (!e.target.getAttribute('disabled') && !isNaN(parseInt(e.target.getAttribute('data-page')))) {
+                    _this.callback(e.target.getAttribute('data-page'));
                 } else {
                     return false;
                 }
